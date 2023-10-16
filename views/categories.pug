@@ -4,8 +4,20 @@ block main
   section#categories
   header 
     h1 Categories 
-    ul 
-      each category in categories
-        li
-          a(href=`/expenses/${category.id}`)
-            h2= category.title
+    ul(class="categoriesActions") 
+      li 
+        form(action=`/categories/orderby/title` method="post")
+          button(type="submit") ORDER BY TITLE
+      li 
+        form(action=`/categories/orderby/title` method="post")
+          button(type="submit") ORDER BY TOTAL
+      li 
+        form(action=`/categories/orderby/title` method="post")
+          button(type="submit") ORDER BY DATE
+  ul 
+    each category in categories
+      li
+        a(href=`/expenses/${category.id}`)
+          h2= category.title
+
+block headerLinks

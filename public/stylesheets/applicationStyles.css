@@ -4,23 +4,25 @@ a {
 }
 
 body {
-  background-color: azure;
+  max-width: 1000px;
+  margin: auto;
   color: #3f3f3f;
-  font: normal 20px "PT Sans", Helvetica, Arial, sans-serif;
+  font: normal 16px "PT Sans", Helvetica, Arial, sans-serif;
 }
 
 body > header {
-  margin: 0 auto;
-  max-width: 1000px;
-  padding: 55px 0 35px;
+  margin: 20px 50px;
+  padding: 20px;
+  display: block;
 }
 
-body > header h1 {
+
+body > header h1.logo {
   color: gold;
   font-family: 'Indie Flower', cursive;
-  display: inline-block;
   font-size: 30px;
-  width: 38%;
+  width: 60%;
+  display: inline-block;
 }
 
 body > main {
@@ -86,4 +88,45 @@ form input[type="submit"]:hover {
 
 form fieldset.actions a:hover {
   color: #b00b00;
+}
+
+table#expenses {
+  width: 75%;
+  border: none;
+  margin: auto;
+  padding: 5px;
+}
+
+table#expenses th {
+  padding-left: 10px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+table#expenses tr:first-child th{
+  border-bottom: 1px solid gold;
+}
+
+table#expenses tr:nth-child(2) td {
+  padding-top: 25px;
+}
+
+table#expenses td {
+  padding-left: 10px;
+  font: normal 18px 'Indie Flower', cursive;
+}
+
+table#expenses tr td:nth-child(1) {
+  width: 60%;
+}
+
+header ul.categoriesActions {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+header ul.categoriesActions li {
+  width: 100px;
 }

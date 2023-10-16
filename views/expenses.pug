@@ -1,8 +1,21 @@
 extends layout 
 
 block main 
-  h1= categoryTitle
-  ul 
-    each expense in expenses 
-      li 
-        p= expense.title
+  h1= categoryTitle+"'s Expenses:"
+  if expenses.length === 0
+    p There are no expenses for this category.
+    a(href="#") Create one now! 
+  else
+    table#expenses
+      tr 
+        th Expense 
+        th Amount 
+        th Date
+      each expense in expenses 
+        tr 
+          td= expense.title
+          td= expense.amount+` €` 
+          td= expense.expense_date.toString().substring(4, 15)
+
+block headerLinks
+  a(href="/categories") View All Categories
