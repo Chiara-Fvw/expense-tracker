@@ -1,0 +1,8 @@
+extends layout 
+
+block main 
+  h1= categoryTitle
+  ul 
+    each expense in expenses 
+      li 
+        p= expense.title
