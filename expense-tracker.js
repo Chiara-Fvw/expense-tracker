@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false })); //middleware to process data s
 app.use((req, res, next) => {
   res.locals.store = new PgPersistence(req.session);
   next();
-})
+});
 
 app.get("/", (req, res) => {
   res.render("welcome");
@@ -30,7 +30,8 @@ app.get("/signin", (req, res) => {
 });
 
 app.get("/categories", async(req, res) => {
-  let categories = await res.locals.store.listCategories();
+  let categories = await res.locals.store.categoriesOrderedBy('title');
+
   res.render("categories", {
     categories
   });
@@ -45,7 +46,19 @@ app.get("/expenses/:expenseId", async(req, res) => {
     expenses,
     categoryTitle
    });
-})  
+});
+
+app.get("/categories/orderby/title", async(req, res) => {
+  res.redirect("/categories");
+});
+
+app.get("/categories/orderby/amount", async(req, res) => {
+  let categories = await res.locals.store.categoriesOrderedBy('amount');
+  
+  res.render("categories", {
+    categories
+  });
+});
 
 // app.post("/users/signin", )
 
