@@ -11,24 +11,30 @@ body {
 }
 
 body > header {
-  margin: 20px 50px;
   padding: 20px;
-  display: block;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
 }
 
 
 body > header h1.logo {
   color: gold;
   font-family: 'Indie Flower', cursive;
-  font-size: 30px;
-  width: 60%;
-  display: inline-block;
+  font-size: 28px;
 }
 
 body > main {
   max-width: 1000px;
   margin: 0 auto;
   padding: 25px;
+}
+
+.sectionTitle {
+  margin-bottom: 20px;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 form fieldset.actions a {
@@ -90,43 +96,96 @@ form fieldset.actions a:hover {
   color: #b00b00;
 }
 
-table#expenses {
+/* Expenses view */
+table.expenses {
   width: 75%;
   border: none;
   margin: auto;
   padding: 5px;
 }
 
-table#expenses th {
+table.expenses th {
   padding-left: 10px;
   text-align: left;
   text-transform: uppercase;
 }
 
-table#expenses tr:first-child th{
+table.expenses tr:first-child th{
   border-bottom: 1px solid gold;
 }
 
-table#expenses tr:nth-child(2) td {
+table.expenses tr:nth-child(2) td {
   padding-top: 25px;
 }
 
-table#expenses td {
+table.expenses td {
   padding-left: 10px;
   font: normal 18px 'Indie Flower', cursive;
 }
 
-table#expenses tr td:nth-child(1) {
+table.expenses tr td:nth-child(1) {
   width: 60%;
 }
 
-header ul.categoriesActions {
+nav.actionMenu {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  width: 40%;
+}
+
+nav.actionMenu a {
+  width: auto;
+}
+
+nav.actionMenu a:hover {
+  color: silver;
+}
+
+/* Categories view */
+ul.sectionActions {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-evenly;
   align-items: center;
+  margin-bottom: 35px;
 }
 
-header ul.categoriesActions li {
-  width: 100px;
+ul.sectionActions li {
+  width: 130px;
+  text-align: center;
+  
+  display: inline-block;
+  outline: none;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 13px 23px;
+  border: 1px solid #222222;
+  transition: box-shadow 0.2s ease 0s, -ms-transform 0.1s ease 0s, -webkit-transform 0.1s ease 0s, transform 0.1s ease 0s;
+  background: #fff;
+  color: #222222;
+}
+
+header ul.sectionActions li:hover {
+  border-color: #000000;
+  background: #f7f7f7;
+}
+
+ul > li.categoryPresentation {
+  max-width: 60%;
+  margin: auto;
+  background-color: rgb(249, 241, 217);
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 15px;
+  font: normal 18px 'Indie Flower', cursive;
+}
+
+ul > li.categoryPresentation a{
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }

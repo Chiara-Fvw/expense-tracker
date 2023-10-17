@@ -2,22 +2,18 @@ extends layout
 
 block main 
   section#categories
-  header 
-    h1 Categories 
-    ul(class="categoriesActions") 
-      li 
-        form(action=`/categories/orderby/title` method="post")
-          button(type="submit") ORDER BY TITLE
-      li 
-        form(action=`/categories/orderby/title` method="post")
-          button(type="submit") ORDER BY TOTAL
-      li 
-        form(action=`/categories/orderby/title` method="post")
-          button(type="submit") ORDER BY DATE
-  ul 
-    each category in categories
-      li
-        a(href=`/expenses/${category.id}`)
-          h2= category.title
+    header 
+      h1(class='sectionTitle') Categories
+      ul(class="sectionActions") 
+        li 
+          a(href=`/categories/orderby/title`) ORDER BY TITLE
+        li 
+          a(href="/categories/orderby/amount") ORDER BY AMOUNT
+    ul 
+      each category in categories
+        li(class='categoryPresentation')
+          a(href=`/expenses/${category.id}`)
+            h2= category.title
+            p= category.amount+"€"
 
 block headerLinks
