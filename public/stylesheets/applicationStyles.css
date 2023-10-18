@@ -74,10 +74,10 @@ form fieldset button {
   -moz-appearance: none;
   -webkit-appearance: none;
 
-  background-color: #dd5f4f;
+  background-color: gold;
   border: none;
   border-radius: 8px;
-  color: #ffffff;
+  color: darkgoldenrod;
   font: normal 24px "PT Sans", Helvetica, Arial, sans-serif;
   margin: 30px 40px 0 0;
   padding: 12px 45px;
@@ -188,4 +188,38 @@ ul > li.categoryPresentation a{
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
+}
+
+/* Edition and Deletion */
+div.dividedScreen {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+div.dividedScreen > section {
+  width: 50%;
+}
+
+#deletion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#deletion > form > button {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+
+  width: 200px;
+
+  background-color: #dd5f4f;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font: normal 24px "PT Sans", Helvetica, Arial, sans-serif;
+  padding: 12px 45px;
+
+  -moz-transition: background-color 200ms ease;
+  -o-transition: background-color 200ms ease;
+  -webkit-transition: background-color 200ms ease;
 }

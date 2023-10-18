@@ -95,6 +95,14 @@ app.post("/categories", async(req, res) => {
   res.redirect("/categories");
 });
 
+//Delete a category
+app.post("/categories/:categoryId/delete", async(req, res) => {
+  let id = req.params.categoryId;
+  let deleted = await res.locals.store.deleteCategory(id);
+
+  if(!deleted) Window.alert("SOMETHING IS NOT WORKING PROPERLY...");
+  res.redirect("/categories");
+});
 
 
 // app.post("/users/signin", )
