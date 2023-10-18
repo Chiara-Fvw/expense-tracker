@@ -79,7 +79,24 @@ app.post("/categories/:categoryId/edit", async(req, res) => {
   if (!updated) Window.alert("SOMETHING IS NOT WORKING PROPERLY...");
 
   res.redirect("/categories");
-})
+});
+
+//Add a new category
+app.get("/categories/new", (req, res) => {
+  res.render("new-category");
+});
+
+app.post("/categories", async(req, res) => {
+  let catTitle = req.body.categoryTitle;
+  let created = await res.locals.store.newCategory(catTitle);
+
+  if(!created) Window.alert("SOMETHING IS NOT WORKING PROPERLY...");
+
+  res.redirect("/categories");
+});
+
+
+
 // app.post("/users/signin", )
 
 
