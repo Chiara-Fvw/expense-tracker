@@ -29,6 +29,7 @@ app.get("/signin", (req, res) => {
   res.render("signin");
 });
 
+//Render category list
 app.get("/categories", async(req, res) => {
   let categories = await res.locals.store.categoriesOrderedBy('title');
 
@@ -37,17 +38,20 @@ app.get("/categories", async(req, res) => {
   });
 });
 
-app.get("/expenses/:expenseId", async(req, res) => {
-  let id = req.params.expenseId;
+//Render the expenses of a particular category.
+app.get("/expenses/:categoryId", async(req, res) => {
+  let id = req.params.categoryId;
   let categoryTitle = await res.locals.store.getCategoryTitle(+id);
   let expenses = await res.locals.store.expensesOfCategory(+id);
 
   res.render("expenses", { 
     expenses,
-    categoryTitle
+    categoryTitle,
+    id
    });
 });
 
+//Ordering category list.
 app.get("/categories/orderby/title", async(req, res) => {
   res.redirect("/categories");
 });
@@ -60,6 +64,22 @@ app.get("/categories/orderby/amount", async(req, res) => {
   });
 });
 
+app.get("/categories/:categoryId/edit", async(req, res) => {
+  let id = req.params.categoryId;
+  let categoryInfo = await res.locals.store.getCategoryInfo(id);
+
+  res.render("edit-category", { categoryInfo });
+});
+
+//Edit a category
+app.post("/categories/:categoryId/edit", async(req, res) => {
+  let catId = req.params.categoryId;
+  let catTitle = req.body.categoryTitle;
+  let updated = await res.locals.store.updateCategoryTitle(catId, catTitle);
+  if (!updated) Window.alert("SOMETHING IS NOT WORKING PROPERLY...");
+
+  res.redirect("/categories");
+})
 // app.post("/users/signin", )
 
 

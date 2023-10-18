@@ -1,0 +1,17 @@
+extends layout
+
+block main 
+  section#edition 
+    h1(class='sectionTitle')= "EDIT CATEGORY " + categoryInfo.title
+    form#editionForm(action=`/categories/${categoryInfo.id}/edit` method="post")
+      dl 
+        dt 
+          label(for="categoryTitle") Enter the new category name: 
+        dd 
+          input(type="text"
+                name="categoryTitle"
+                placeholder="Category Title"
+                value= categoryTitle || categoryInfo.title)
+      fieldset 
+        input(type="submit" value="Save")
+        a(href=`/expenses/${categoryInfo.id}`) Cancel 
