@@ -109,23 +109,33 @@ app.post("/categories/:categoryId/delete", async(req, res) => {
 app.get("/expenses/:categoryId/orderby/:column", async(req, res) => {
   let categoryId = req.params.categoryId;
   let column = req.params.column;
-  let expenses = await res.locals.store.expensesOfCategory(categoryId);
+  let expenses = await res.locals.store.sortedExpenses(categoryId, column);
   let categoryTitle = await res.locals.store.getCategoryTitle(categoryId);
-
-  if (column === 'title') {
-    expenses.sort((a, b) => a.title - b.title);
-  } else if (column === 'amount') {
-    expenses.sort((a, b) => a.amount - b.amount);
-  } else {
-    expenses.sort((a, b) => a.expense_date + b.expense_date);
-  }
 
   res.render("expenses", {
     expenses,
     categoryTitle,
     categoryId
   });
-})
+});
+
+//Add a new expense
+app.get(`/expenses/:categoryId/new`, (req, res) => {
+  let categoryId = req.params.categoryId;
+  res.render("new-expense", { categoryId });
+});
+
+app.post("/expenses/:categoryId", async(req, res) => {
+  let categoryId = req.params.categoryId;
+  let title = req.body.expenseTitle;
+  let amount = req.body.expenseAmount;
+  let date = req.body.expenseDate;
+
+  let created = await res.locals.store.addExpense(categoryId, title, amount, date);
+  if (!created) Window.alert("SOMETHING IS NOT WORKING PROPERLY...");
+
+  res.redirect(`/expenses/${categoryId}`);
+});
 
 // app.post("/users/signin", )
 

@@ -1,0 +1,31 @@
+extends layout 
+block main 
+  form(action=`/expenses/${categoryId}/` method="post")
+    dl 
+      dt 
+        label(for="expenseTitle") Enter the new expense title: 
+      dd 
+        input(type="text"
+              id="expenseTitle"
+              name="expenseTitle"
+              placeholder="Expense Title"
+              value=expenseTitle)
+      dt 
+        label(for="expenseAmount") Enter the amount of the expense: 
+      dd 
+        input(type="number" step="any"
+              id="expenseAmount"
+              name="expenseAmount"
+              placeholder="Expense Amount"
+              value=expenseAmount)
+      dt 
+        label(for="expenseTitle") Enter the date of the amount: 
+      dd 
+        input(type="date"
+              id="expenseDate"
+              name="expenseDate"
+              placeholder="Expense Date"
+              value=expenseDate)
+    fieldset 
+      input(type="submit" value="Save")
+      a(href="/categories") Cancel 
