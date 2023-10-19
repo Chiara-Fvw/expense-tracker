@@ -9,11 +9,11 @@ block main
     else
       ul(class="sectionActions") 
         li 
-          a(href="#") ORDER BY TITLE
+          a(href=`/expenses/${categoryId}/orderby/${"title"}`) ORDER BY TITLE
         li 
-          a(href="#") ORDER BY AMOUNT
+          a(href=`/expenses/${categoryId}/orderby/${"amount"}`) ORDER BY AMOUNT
         li 
-          a(href="#") ORDER BY DATE
+          a(href=`/expenses/${categoryId}/orderby/${"expense_date"}`) ORDER BY DATE
       table(class="expenses")
         tr 
           th Expense 
@@ -28,5 +28,5 @@ block main
 block headerLinks
   nav(class="actionMenu")
     a(href="/categories") CATEGORIES
-    a(href=`/categories/${id}/edit`) EDIT CATEGORY
+    a(href=`/categories/${categoryId}/edit`) EDIT CATEGORY
     a(href="/categories") ADD EXPENSE

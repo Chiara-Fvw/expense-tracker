@@ -40,14 +40,14 @@ app.get("/categories", async(req, res) => {
 
 //Render the expenses of a particular category.
 app.get("/expenses/:categoryId", async(req, res) => {
-  let id = req.params.categoryId;
-  let categoryTitle = await res.locals.store.getCategoryTitle(+id);
-  let expenses = await res.locals.store.expensesOfCategory(+id);
+  let categoryId = req.params.categoryId;
+  let categoryTitle = await res.locals.store.getCategoryTitle(+categoryId);
+  let expenses = await res.locals.store.expensesOfCategory(+categoryId);
 
   res.render("expenses", { 
     expenses,
     categoryTitle,
-    id
+    categoryId
    });
 });
 
@@ -104,6 +104,28 @@ app.post("/categories/:categoryId/delete", async(req, res) => {
   res.redirect("/categories");
 });
 
+//Order expenses
+
+app.get("/expenses/:categoryId/orderby/:column", async(req, res) => {
+  let categoryId = req.params.categoryId;
+  let column = req.params.column;
+  let expenses = await res.locals.store.expensesOfCategory(categoryId);
+  let categoryTitle = await res.locals.store.getCategoryTitle(categoryId);
+
+  if (column === 'title') {
+    expenses.sort((a, b) => a.title - b.title);
+  } else if (column === 'amount') {
+    expenses.sort((a, b) => a.amount - b.amount);
+  } else {
+    expenses.sort((a, b) => a.expense_date + b.expense_date);
+  }
+
+  res.render("expenses", {
+    expenses,
+    categoryTitle,
+    categoryId
+  });
+})
 
 // app.post("/users/signin", )
 
