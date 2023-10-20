@@ -137,6 +137,30 @@ app.post("/expenses/:categoryId", async(req, res) => {
   res.redirect(`/expenses/${categoryId}`);
 });
 
+//Edit expense
+app.get("/expenses/:expenseId/edit", async(req, res) => {
+  let expenseId = req.params.expenseId;
+
+  let expenseInfo = await res.locals.store.renderExpense(expenseId);
+  let date = expenseInfo.expense_date.toLocaleString().split(',')[0].split('/').map(elm => elm.padStart(2, '0'));
+  let [day, month, year] = date;
+  let transformedDate = ([day, month, year] = [year, month, day]).join('-');
+
+  res.render("edit-expense", { expenseInfo, transformedDate });
+}); 
+
+app.post("/expenses/:expenseId/:categoryId/edit", async(req, res) => {
+  let expenseId = req.params.expenseId;
+  let categoryId = req.params.categoryId
+  let title = req.body.expenseTitle;
+  let amount = req.body.expenseAmount;
+  let e_date = req.body.expenseDate;
+
+  let updated = await res.locals.store.updateExpense(expenseId, title, amount, e_date);
+
+  res.redirect(`/expenses/${categoryId}`);
+});
+
 // app.post("/users/signin", )
 
 

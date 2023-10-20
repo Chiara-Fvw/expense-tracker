@@ -133,7 +133,19 @@ table.expenses td.rowActions {
 }
 
 table.expenses td.rowActions a img {
-  max-width: 30px;
+  width: 30px;
+}
+
+table.expenses td.rowActions form.delete input[type="submit"] {
+  border: none;
+  background: url("../images/delete.png") no-repeat;
+  background-size: contain;
+  color: transparent;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
 }
 
 table.expenses tr td:nth-child(1) {

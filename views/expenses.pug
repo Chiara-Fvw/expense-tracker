@@ -26,10 +26,10 @@ block main
             td= expense.amount+` €` 
             td= expense.expense_date.toString().substring(4, 15)
             td.rowActions
-              a(href="") 
+              a(href=`/expenses/${expense.id}/edit`) 
                 img(src="/images/edit.png" alt="Edit")
-              a(href="") 
-                img(src='/images/delete.png' alt="Delete")
+              form.delete(action=`/expenses/${expense.id}/delete` method="post") 
+                input(type="submit")
 
 block headerLinks
   nav(class="actionMenu")
