@@ -19,11 +19,17 @@ block main
           th Expense 
           th Amount 
           th Date
+          th
         each expense in expenses 
           tr 
             td= expense.title
             td= expense.amount+` €` 
             td= expense.expense_date.toString().substring(4, 15)
+            td.rowActions
+              a(href="") 
+                img(src="/images/edit.png" alt="Edit")
+              a(href="") 
+                img(src='/images/delete.png' alt="Delete")
 
 block headerLinks
   nav(class="actionMenu")

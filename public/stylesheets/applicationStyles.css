@@ -125,6 +125,17 @@ table.expenses td {
   font: normal 18px 'Indie Flower', cursive;
 }
 
+table.expenses td.rowActions {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+table.expenses td.rowActions a img {
+  max-width: 30px;
+}
+
 table.expenses tr td:nth-child(1) {
   width: 60%;
 }
