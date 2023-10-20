@@ -149,7 +149,7 @@ table.expenses td.rowActions form.delete input[type="submit"] {
 }
 
 table.expenses tr td:nth-child(1) {
-  width: 60%;
+  width: 55%;
 }
 
 nav.actionMenu {
