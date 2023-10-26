@@ -1,19 +1,19 @@
-const express = require("express");
-const morgan = require("morgan");
+const express = require("express"); //returns a function to create an application object
+const morgan = require("morgan"); //logging module
 const PgPersistence = require("./lib/pg-persistence");
 
-const app = express();
+const app = express(); //we call the function to create the application object app
 const host = "localhost";
 const port = 3001;
 const Category = require("./lib/category");
 
-app.set("views", "./views");
-app.set("view engine", "pug");
+app.set("views", "./views"); //Tells express to look for view templates in the views directory
+app.set("view engine", "pug"); //Tells express to use Pug as template engine
 
 app.use(express.static("public")); //here we use `use` as express calls the func every time it receives an HTTP request.
-app.use(morgan("common")); //for the logging
+app.use(morgan("common")); //sets the output log format to the “common” format
 app.use(express.static("public")); //telling express where to achieve static content.
-app.use(express.urlencoded({ extended: false })); //middleware to process data sent from client to server through forms or post reqeusts. Is necessary for forms
+app.use(express.urlencoded({ extended: false })); //middleware to process data sent from client to server through forms or post requests. Is necessary for forms
 
 //Create a new Data store: 
 app.use((req, res, next) => {
@@ -21,6 +21,9 @@ app.use((req, res, next) => {
   next();
 });
 
+//Route that handles an HTTP GET request fot the path `/``
+//The function argument is a callback (route controller or route handler) 
+//that `get`calls when receives a request
 app.get("/", (req, res) => {
   res.render("welcome");
 });
@@ -30,12 +33,16 @@ app.get("/signin", (req, res) => {
 });
 
 //Render category list
-app.get("/categories", async(req, res) => {
+app.get("/categories", async(req, res, next) => {
   let categories = await res.locals.store.categoriesOrderedBy('title');
-
-  res.render("categories", {
-    categories
-  });
+  //Validating
+  if(!categories) {
+    next(new Error(`There are no categories in the list.`));
+  } else {
+    res.render("categories", {
+      categories
+    });
+  };
 });
 
 //Render the expenses of a particular category.
@@ -163,8 +170,13 @@ app.post("/expenses/:expenseId/:categoryId/edit", async(req, res) => {
 
 // app.post("/users/signin", )
 
+//Error handler
+app.use((err, req, res, _next) => {
+  console.log(err); //Writes more extensive information to the log
+  res.status(404).send(err.message);
+});
 
-//Listener
+//Listener: method that tells the application to start listening for the requests on the given port:
 app.listen(port, host, () => {
   console.log(`Listening on port ${port} of ${host}.`);
 });
