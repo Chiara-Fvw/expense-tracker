@@ -1,3 +1,4 @@
 info.mk
 node_modules
 lib/users.sql
+launch.json
