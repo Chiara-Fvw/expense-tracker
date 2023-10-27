@@ -1,5 +1,8 @@
 const express = require("express"); //returns a function to create an application object
 const morgan = require("morgan"); //logging module
+const flash = require("express-flash");
+const session = require("express-session"); //Provides features to manage sessions
+const { body, validationResult } = require("express-validator");
 const PgPersistence = require("./lib/pg-persistence");
 
 const app = express(); //we call the function to create the application object app
@@ -12,6 +15,19 @@ app.set("view engine", "pug"); //Tells express to use Pug as template engine
 
 app.use(express.static("public")); //here we use `use` as express calls the func every time it receives an HTTP request.
 app.use(morgan("common")); //sets the output log format to the “common” format
+app.use(session({
+  cookie: {
+    httpOnly: true,
+    maxAge: 31 * 24 * 60 * 60 * 1000,
+    path: "/",
+    secure: false,
+  },
+  name: "expense-tracker-sessionId",
+  resave: false,
+  saveUninitialized: true,
+  secret: "This is not secure at all",
+}));
+app.use(flash());
 app.use(express.static("public")); //telling express where to achieve static content.
 app.use(express.urlencoded({ extended: false })); //middleware to process data sent from client to server through forms or post requests. Is necessary for forms
 
@@ -20,6 +36,13 @@ app.use((req, res, next) => {
   res.locals.store = new PgPersistence(req.session);
   next();
 });
+
+//Middleware that stores the flash object from req.session in res.locals.flash. This is one case in wich we can pass data to views using res.locals (instead of app.locals)
+app.use((req, res, next) => {
+  res.locals.flash = req.session.flash;
+  delete req.session.flash;   //delete after we save a reference to it in res.locals.flash. If we don't delete it, flash messages persist from one request to the next and never go away.
+  next();
+})
 
 //Route that handles an HTTP GET request fot the path `/``
 //The function argument is a callback (route controller or route handler) 
@@ -94,12 +117,18 @@ app.get("/categories/new", (req, res) => {
 });
 
 app.post("/categories", async(req, res) => {
-  let catTitle = req.body.categoryTitle;
-  let created = await res.locals.store.newCategory(catTitle);
+  let catTitle = req.body.categoryTitle.trim();
 
-  if(!created) Window.alert("SOMETHING IS NOT WORKING PROPERLY...");
-
-  res.redirect("/categories");
+  if (catTitle.length === 0) {
+    req.flash("error", "The category title must be provided.");
+    res.render("new-category", {
+      flash: req.flash()    //We have to define a flash variable when calling res.render
+    });
+  } else {
+    let created = await res.locals.store.newCategory(catTitle);
+    req.flash("success", "The new category has been created.");
+    res.redirect("/categories");
+  };
 });
 
 //Delete a category
