@@ -94,6 +94,7 @@ app.get("/categories/orderby/amount", async(req, res) => {
   });
 });
 
+//Edit a category
 app.get("/categories/:categoryId/edit", async(req, res) => {
   let id = req.params.categoryId;
   let categoryInfo = await res.locals.store.getCategoryInfo(id);
@@ -101,14 +102,25 @@ app.get("/categories/:categoryId/edit", async(req, res) => {
   res.render("edit-category", { categoryInfo });
 });
 
-//Edit a category
 app.post("/categories/:categoryId/edit", async(req, res) => {
   let catId = req.params.categoryId;
-  let catTitle = req.body.categoryTitle;
-  let updated = await res.locals.store.updateCategoryTitle(catId, catTitle);
-  if (!updated) Window.alert("SOMETHING IS NOT WORKING PROPERLY...");
+  let catTitle = req.body.categoryTitle.trim();
 
-  res.redirect("/categories");
+  if (catTitle.length === 0) {
+    req.flash("error", "The category title must be provided.");
+    let categoryInfo = {
+      id: catId,
+      title: catTitle
+    }
+    res.render("edit-category", { 
+      categoryInfo,
+      flash: req.flash()
+    });
+  } else {
+    let updated = await res.locals.store.updateCategoryTitle(catId, catTitle);
+    req.flash("success", "The category has been updated.");
+    res.redirect("/categories");
+  };
 });
 
 //Add a new category
