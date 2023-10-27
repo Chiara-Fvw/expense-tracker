@@ -28,7 +28,7 @@ block main
             td.rowActions
               a(href=`/expenses/${expense.id}/edit`) 
                 img(src="/images/edit.png" alt="Edit")
-              form.delete(action=`/expenses/${expense.id}/delete` method="post") 
+              form.delete(action=`/expenses/${categoryId}/${expense.id}/delete` method="post") 
                 input(type="submit")
 
 block headerLinks

@@ -148,7 +148,6 @@ app.post("/categories/:categoryId/delete", async(req, res) => {
   let id = req.params.categoryId;
   let deleted = await res.locals.store.deleteCategory(id);
 
-  if(!deleted) Window.alert("SOMETHING IS NOT WORKING PROPERLY...");
   res.redirect("/categories");
 });
 
@@ -175,14 +174,39 @@ app.get(`/expenses/:categoryId/new`, (req, res) => {
 
 app.post("/expenses/:categoryId", async(req, res) => {
   let categoryId = req.params.categoryId;
-  let title = req.body.expenseTitle;
-  let amount = req.body.expenseAmount;
+  let title = req.body.expenseTitle.trim();
+  let amount = req.body.expenseAmount.replace(',', '.');
   let date = req.body.expenseDate;
 
-  let created = await res.locals.store.addExpense(categoryId, title, amount, date);
-  if (!created) Window.alert("SOMETHING IS NOT WORKING PROPERLY...");
-
-  res.redirect(`/expenses/${categoryId}`);
+  const reRenderNewExpense = () => {
+    res.render("new-expense", {
+      categoryId,
+      expenseTitle: title, 
+      expenseAmount: amount,
+      expenseDate: date,
+      flash: req.flash()
+    });
+  };
+  
+  if (title.length === 0) {
+    req.flash("error", "The expense must have a title");
+    reRenderNewExpense();
+  } else if (amount < 1) {
+    req.flash("error", "Please, set an amount for the expense.");
+    reRenderNewExpense();
+  } else if (date === '') {
+    req.flash("error", "Please, set the date for the expense.");
+    reRenderNewExpense();
+  } else { 
+    let created = await res.locals.store.addExpense(categoryId, title, amount, date);
+    if(!created) {
+      req.flash("error", "Ups... something went wrong :( Please, try again.");
+      reRenderNewExpense();
+    }
+    req.flash("success", "The new category has been created.");
+    res.redirect(`/expenses/${categoryId}`);
+  }
+  
 });
 
 //Edit expense
@@ -198,15 +222,57 @@ app.get("/expenses/:expenseId/edit", async(req, res) => {
 }); 
 
 app.post("/expenses/:expenseId/:categoryId/edit", async(req, res) => {
-  let expenseId = req.params.expenseId;
-  let categoryId = req.params.categoryId
-  let title = req.body.expenseTitle;
-  let amount = req.body.expenseAmount;
+  let expenseInfo = {
+    id: req.params.expenseId,
+    category_id: req.params.categoryId,
+    title: req.body.expenseTitle,
+    amount: req.body.expenseAmount,
+  }
+
   let e_date = req.body.expenseDate;
+  let date = e_date.toLocaleString().split(',')[0].split('/').map(elm => elm.padStart(2, '0'));
+  let [day, month, year] = date;
+  let transformedDate = ([day, month, year] = [year, month, day]).join('-');
 
-  let updated = await res.locals.store.updateExpense(expenseId, title, amount, e_date);
+  const reRenderEditExpense = () => {
+    res.render("edit-expense", {
+      expenseInfo,
+      transformedDate,
+      flash: req.flash()
+    });
+  };
 
-  res.redirect(`/expenses/${categoryId}`);
+  if (expenseInfo.title.length === 0) {
+    req.flash("error", "The expense must have a title");
+    reRenderEditExpense();
+  } else if (expenseInfo.amount < 1) {
+    req.flash("error", "Please, set an amount for the expense.");
+    reRenderEditExpense();
+  } else if (e_date === '') {
+    req.flash("error", "Please, set the date for the expense.");
+    reRenderEditExpense();
+  } else { 
+    let updated = await res.locals.store.updateExpense(expenseInfo.id, expenseInfo.title, expenseInfo.amount, e_date);
+    if(!updated) {
+      req.flash("error", "Ups... something went wrong :( Please, try again.");
+      reRenderEditExpense();
+    }
+    req.flash("success", "The expense has been updated.");
+    res.redirect(`/expenses/${expenseInfo.category_id}`);
+  };
+});
+
+//Delete an expense
+app.post("/expenses/:categoryId/:expenseId/delete", async(req, res) => {
+  let id = req.params.expenseId;
+  let catId = req.params.categoryId;
+  let deleted = await res.locals.store.deleteExpense(id);
+
+  if (!deleted) {
+    req.flash("error", "Ups... something went wrong :( Plesase, try again!");
+  }
+  req.flash("success", "Expense deleted.");
+  res.redirect(`/expenses/${catId}`);
 });
 
 // app.post("/users/signin", )
