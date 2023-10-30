@@ -131,15 +131,28 @@ app.get("/categories/new", (req, res) => {
 app.post("/categories", async(req, res) => {
   let catTitle = req.body.categoryTitle.trim();
 
-  if (catTitle.length === 0) {
-    req.flash("error", "The category title must be provided.");
+  const rerenderView = () => {
     res.render("new-category", {
+      categoryTitle: catTitle,
       flash: req.flash()    //We have to define a flash variable when calling res.render
     });
+  }
+
+  if (catTitle.length === 0) {
+    req.flash("error", "The category title must be provided.");
+    rerenderView();
+  } else if (await res.locals.store.existCategory(catTitle)) {
+    req.flash("error", "This category name already exists.");
+    rerenderView();
   } else {
     let created = await res.locals.store.newCategory(catTitle);
-    req.flash("success", "The new category has been created.");
-    res.redirect("/categories");
+    if (!created) {
+      req.flash("errror", "Something went wrong... please, try again!");
+      rerenderView();
+    } else {
+      req.flash("success", "The new category has been created.");
+      res.redirect("/categories");
+    };
   };
 });
 
