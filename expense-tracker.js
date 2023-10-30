@@ -4,6 +4,7 @@ const flash = require("express-flash");
 const session = require("express-session"); //Provides features to manage sessions
 const { body, validationResult } = require("express-validator");
 const PgPersistence = require("./lib/pg-persistence");
+const catchError = require("./lib/catch-error");
 
 const app = express(); //we call the function to create the application object app
 const host = "localhost";
@@ -60,7 +61,7 @@ app.get("/categories", async(req, res, next) => {
   let categories = await res.locals.store.categoriesOrderedBy('title');
   //Validating
   if(!categories) {
-    next(new Error(`There are no categories in the list. `));
+    next(new Error(`There are no categories.`));
   } else {
     res.render("categories", {
       categories
