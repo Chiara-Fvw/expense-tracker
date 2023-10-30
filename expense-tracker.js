@@ -60,7 +60,7 @@ app.get("/categories", async(req, res, next) => {
   let categories = await res.locals.store.categoriesOrderedBy('title');
   //Validating
   if(!categories) {
-    next(new Error(`There are no categories in the list.`));
+    next(new Error(`There are no categories in the list. `));
   } else {
     res.render("categories", {
       categories
@@ -148,7 +148,13 @@ app.post("/categories/:categoryId/delete", async(req, res) => {
   let id = req.params.categoryId;
   let deleted = await res.locals.store.deleteCategory(id);
 
-  res.redirect("/categories");
+  if (!deleted) {
+    req.flash("error", "Ups! Something went wrong... Please, try again;)");
+    res.render("categories");
+  } else {
+    req.flash("success", "The category doesn't exist anymore...");
+    res.redirect("/categories");
+  }
 });
 
 //Order expenses
@@ -269,7 +275,7 @@ app.post("/expenses/:categoryId/:expenseId/delete", async(req, res) => {
   let deleted = await res.locals.store.deleteExpense(id);
 
   if (!deleted) {
-    req.flash("error", "Ups... something went wrong :( Plesase, try again!");
+    req.flash("error", "Ups... something went wrong:( Plesase, try again!");
   }
   req.flash("success", "Expense deleted.");
   res.redirect(`/expenses/${catId}`);

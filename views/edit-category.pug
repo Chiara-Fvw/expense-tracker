@@ -17,5 +17,5 @@ block main
           input(type="submit" value="Save")
           a(href=`/expenses/${categoryInfo.id}`) Cancel 
     section#deletion 
-      form(action=`/categories/${categoryInfo.id}/delete` method="post")
+      form.delete(action=`/categories/${categoryInfo.id}/delete` method="post")
         button(type="submit") Delete Category
