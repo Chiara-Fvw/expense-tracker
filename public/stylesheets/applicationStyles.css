@@ -223,6 +223,11 @@ div.dividedScreen {
 
 div.dividedScreen > section {
   width: 50%;
+  padding: 25px;
+}
+
+#registration {
+  border-left: solid 1px lightgray;
 }
 
 #deletion {

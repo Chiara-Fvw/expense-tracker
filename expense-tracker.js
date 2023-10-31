@@ -68,7 +68,7 @@ app.get("/", (req, res) => {
 
 //Users signin
 app.get("/users/signin", (req, res) => {
-  req.flash("info", "Please, sign in.");
+  req.flash("info", "Please, sign in or create an account");
   res.render("signin", {
     flash: req.flash(),
   });
@@ -325,6 +325,23 @@ app.post("/expenses/:categoryId/:expenseId/delete", requiresAuthentication, catc
   res.redirect(`/expenses/${catId}`);
 })
 );
+
+//User registration handler
+app.post("/users/register", catchError(async(req, res) => {
+  let username = req.body.usernameR.trim();
+  let password = req.body.passwordR;
+
+  let registered = await res.locals.store.registration(username, password);
+  if (!registered) {
+    req.flash("error", "Something broke :( Please, try again!");
+    res.render("signin", {
+      flash: req.flash(),
+      usernameR: req.body.username,
+    });
+  } 
+  req.flash("success", "Your user has been created! Please login to access the expense tracker.");
+  res.render("signin", {flash: req.flash()});
+}));
 
 //User sign in handler
 app.post("/users/signin", catchError(async(req, res) => {

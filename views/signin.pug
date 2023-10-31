@@ -1,20 +1,40 @@
 extends layout 
 
 block main 
-  h1 Login
-  form(action=`/users/signin` method="post") 
-    dl 
-      dt 
-        label(for="username") Username: 
-      dd 
-        input(type="text" name="username" placeholder="username" value=username)
+  div.dividedScreen
+    section#edition 
+      h1 Login 
+      form(action=`/users/signin` method="post") 
+        dl 
+          dt 
+            label(for="username") Username: 
+          dd 
+            input(type="text" name="username" placeholder="username" value=username)
 
-      dt 
-        label(for="password") Password: 
-      dd 
-        input(type="password" name="password" placeholder="password")
+          dt 
+            label(for="password") Password: 
+          dd 
+            input(type="password" name="password" placeholder="password")
 
-    fieldset.actions 
-      input(type="submit" value="Sign In")
-      a(href=`/`) Cancel
+        fieldset.actions 
+          input(type="submit" value="Sign In")
+          a(href=`/`) Cancel
+    section#registration
+      h1 Create an account
+      form(action=`/users/register` method="post") 
+        dl 
+          dt 
+            label(for="usernameR") Username: 
+          dd 
+            input(type="text" name="usernameR" placeholder="username" value=usernameR)
+
+          dt 
+            label(for="passwordR") Password: 
+          dd 
+            input(type="password" name="passwordR" placeholder="password")
+
+        fieldset.actions 
+          input(type="submit" value="Register")
+          a(href=`/`) Cancel
+
 block signIn
