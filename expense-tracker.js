@@ -52,8 +52,7 @@ app.use((req, res, next) => {
 //Detect unauthorized access to routes.
 const requiresAuthentication = (req, res, next) => {
   if (!res.locals.signedIn) {
-    console.log("Unauthorized.");
-    res.status(401).send("Unauthorized.");
+    res.redirect(302, "/users/signin");
   } else {
     next();
   }
