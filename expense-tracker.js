@@ -327,23 +327,26 @@ app.post("/expenses/:categoryId/:expenseId/delete", requiresAuthentication, catc
 );
 
 //User sign in handler
-app.post("/users/signin", (req, res) => {
+app.post("/users/signin", catchError(async(req, res) => {
   let username = req.body.username.trim();
   let password = req.body.password;
 
-  if (username !== 'admin' || password != 'secret') {
+  let authenticated = await res.locals.store.authenticate(username, password);
+
+  if (!authenticated) {
     req.flash("error", "Invalid credentials.");
     res.render("signin", {
       flash: req.flash(),
       username: req.body.username,
-    })
+    });
   } else {
     req.session.username = username;
     req.session.signedIn = true;
     req.flash("info", `Welcome ${req.session.username}!`);
     res.redirect("/categories");
   }
-});
+})
+);
 
 //Signout handler
 app.post("/users/signout", (req, res) => {
