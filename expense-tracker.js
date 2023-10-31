@@ -2,15 +2,15 @@ const express = require("express"); //returns a function to create an applicatio
 const morgan = require("morgan"); //logging module
 const flash = require("express-flash");
 const session = require("express-session"); //Provides features to manage sessions
+const store = require("connect-loki");  //Store to use for sessions
 const { body, validationResult } = require("express-validator");
 const PgPersistence = require("./lib/pg-persistence");
 const catchError = require("./lib/catch-error");
 
 const app = express(); //we call the function to create the application object app
+const LokiStore = store(session);
 const host = "localhost";
 const port = 3001;
-const Category = require("./lib/category");
-
 app.set("views", "./views"); //Tells express to look for view templates in the views directory
 app.set("view engine", "pug"); //Tells express to use Pug as template engine
 
@@ -27,6 +27,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   secret: "This is not secure at all",
+  store: new LokiStore({}),
 }));
 
 app.use(flash());
