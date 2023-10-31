@@ -17,7 +17,7 @@ html(lang="en-US")
       a(href="/") 
         h1(class="logo") The Expense Tracker
       block headerLinks
-        a(href="/categories") CATEGORIES
+        //- a(href="/categories") CATEGORIES
     main 
       - let kinds = Object.keys(flash || {}); //in case `flash` is undefined or null.
       if kinds.length > 0
@@ -29,3 +29,14 @@ html(lang="en-US")
       block main
 
     footer
+      block signIn 
+        if signedIn 
+          form(action="/users/signout" method="post")
+            fieldset.actions 
+              p Signed in as  #{username}
+              button Sing Out 
+        else 
+          form(action="/users/signin" method="get")
+            fieldset.actions 
+              p You are not signed in.
+              button Sign In 

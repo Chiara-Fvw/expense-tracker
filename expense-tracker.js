@@ -28,6 +28,7 @@ app.use(session({
   saveUninitialized: true,
   secret: "This is not secure at all",
 }));
+
 app.use(flash());
 app.use(express.static("public")); //telling express where to achieve static content.
 app.use(express.urlencoded({ extended: false })); //middleware to process data sent from client to server through forms or post requests. Is necessary for forms
@@ -39,11 +40,24 @@ app.use((req, res, next) => {
 });
 
 //Middleware that stores the flash object from req.session in res.locals.flash. This is one case in wich we can pass data to views using res.locals (instead of app.locals)
+//Extracts sesssion info
 app.use((req, res, next) => {
+  res.locals.username = req.session.username;
+  res.locals.signedIn = req.session.signedIn;
   res.locals.flash = req.session.flash;
   delete req.session.flash;   //delete after we save a reference to it in res.locals.flash. If we don't delete it, flash messages persist from one request to the next and never go away.
   next();
-})
+});
+
+//Detect unauthorized access to routes.
+const requiresAuthentication = (req, res, next) => {
+  if (!res.locals.signedIn) {
+    console.log("Unauthorized.");
+    res.status(401).send("Unauthorized.");
+  } else {
+    next();
+  }
+};
 
 //Route that handles an HTTP GET request fot the path `/``
 //The function argument is a callback (route controller or route handler) 
@@ -52,25 +66,30 @@ app.get("/", (req, res) => {
   res.render("welcome");
 });
 
-app.get("/signin", (req, res) => {
-  res.render("signin");
+//Users signin
+app.get("/users/signin", (req, res) => {
+  req.flash("info", "Please, sign in.");
+  res.render("signin", {
+    flash: req.flash(),
+  });
 });
 
 //Render category list
-app.get("/categories", async(req, res, next) => {
-  let categories = await res.locals.store.categoriesOrderedBy('title');
+app.get("/categories", requiresAuthentication, catchError(async(req, res) => {
+    let categories = await res.locals.store.categoriesOrderedBy('title');
   //Validating
-  if(!categories) {
-    next(new Error(`There are no categories.`));
-  } else {
-    res.render("categories", {
-      categories
-    });
-  };
-});
+    if(!categories) {
+     throw new Error(`There are no categories.`);
+    } else {
+      res.render("categories", {
+        categories
+      });
+    };
+  })
+);
 
 //Render the expenses of a particular category.
-app.get("/expenses/:categoryId", async(req, res) => {
+app.get("/expenses/:categoryId", requiresAuthentication, catchError(async(req, res) => {
   let categoryId = req.params.categoryId;
   let categoryTitle = await res.locals.store.getCategoryTitle(+categoryId);
   let expenses = await res.locals.store.expensesOfCategory(+categoryId);
@@ -80,30 +99,34 @@ app.get("/expenses/:categoryId", async(req, res) => {
     categoryTitle,
     categoryId
    });
-});
+ })
+);
 
 //Ordering category list.
-app.get("/categories/orderby/title", async(req, res) => {
-  res.redirect("/categories");
-});
+app.get("/categories/orderby/title", requiresAuthentication, catchError(async(req, res) => {
+    res.redirect("/categories");
+  })
+);
 
-app.get("/categories/orderby/amount", async(req, res) => {
-  let categories = await res.locals.store.categoriesOrderedBy('amount');
-  
-  res.render("categories", {
-    categories
-  });
-});
+app.get("/categories/orderby/amount", requiresAuthentication, catchError(async(req, res) => {
+    let categories = await res.locals.store.categoriesOrderedBy('amount');
+    
+    res.render("categories", {
+      categories
+    });
+  })
+);
 
 //Edit a category
-app.get("/categories/:categoryId/edit", async(req, res) => {
+app.get("/categories/:categoryId/edit", requiresAuthentication, catchError(async(req, res) => {
   let id = req.params.categoryId;
   let categoryInfo = await res.locals.store.getCategoryInfo(id);
 
   res.render("edit-category", { categoryInfo });
-});
+})
+);
 
-app.post("/categories/:categoryId/edit", async(req, res) => {
+app.post("/categories/:categoryId/edit", requiresAuthentication, catchError(async(req, res) => {
   let catId = req.params.categoryId;
   let catTitle = req.body.categoryTitle.trim();
 
@@ -122,14 +145,15 @@ app.post("/categories/:categoryId/edit", async(req, res) => {
     req.flash("success", "The category has been updated.");
     res.redirect("/categories");
   };
-});
+})
+);
 
 //Add a new category
-app.get("/categories/new", (req, res) => {
+app.get("/categories/new", requiresAuthentication, (req, res) => {
   res.render("new-category");
 });
 
-app.post("/categories", async(req, res) => {
+app.post("/categories", requiresAuthentication, catchError(async(req, res) => {
   let catTitle = req.body.categoryTitle.trim();
 
   const rerenderView = () => {
@@ -155,10 +179,11 @@ app.post("/categories", async(req, res) => {
       res.redirect("/categories");
     };
   };
-});
+})
+);
 
 //Delete a category
-app.post("/categories/:categoryId/delete", async(req, res) => {
+app.post("/categories/:categoryId/delete", requiresAuthentication, catchError(async(req, res) => {
   let id = req.params.categoryId;
   let deleted = await res.locals.store.deleteCategory(id);
 
@@ -169,11 +194,12 @@ app.post("/categories/:categoryId/delete", async(req, res) => {
     req.flash("success", "The category doesn't exist anymore...");
     res.redirect("/categories");
   }
-});
+})
+);
 
 //Order expenses
 
-app.get("/expenses/:categoryId/orderby/:column", async(req, res) => {
+app.get("/expenses/:categoryId/orderby/:column", requiresAuthentication, catchError(async(req, res) => {
   let categoryId = req.params.categoryId;
   let column = req.params.column;
   let expenses = await res.locals.store.sortedExpenses(categoryId, column);
@@ -184,15 +210,16 @@ app.get("/expenses/:categoryId/orderby/:column", async(req, res) => {
     categoryTitle,
     categoryId
   });
-});
+})
+);
 
 //Add a new expense
-app.get(`/expenses/:categoryId/new`, (req, res) => {
+app.get(`/expenses/:categoryId/new`, requiresAuthentication, (req, res) => {
   let categoryId = req.params.categoryId;
   res.render("new-expense", { categoryId });
 });
 
-app.post("/expenses/:categoryId", async(req, res) => {
+app.post("/expenses/:categoryId", requiresAuthentication, catchError(async(req, res) => {
   let categoryId = req.params.categoryId;
   let title = req.body.expenseTitle.trim();
   let amount = req.body.expenseAmount.replace(',', '.');
@@ -227,10 +254,11 @@ app.post("/expenses/:categoryId", async(req, res) => {
     res.redirect(`/expenses/${categoryId}`);
   }
   
-});
+})
+);
 
 //Edit expense
-app.get("/expenses/:expenseId/edit", async(req, res) => {
+app.get("/expenses/:expenseId/edit", requiresAuthentication, catchError(async(req, res) => {
   let expenseId = req.params.expenseId;
 
   let expenseInfo = await res.locals.store.renderExpense(expenseId);
@@ -239,9 +267,10 @@ app.get("/expenses/:expenseId/edit", async(req, res) => {
   let transformedDate = ([day, month, year] = [year, month, day]).join('-');
 
   res.render("edit-expense", { expenseInfo, transformedDate });
-}); 
+})
+); 
 
-app.post("/expenses/:expenseId/:categoryId/edit", async(req, res) => {
+app.post("/expenses/:expenseId/:categoryId/edit", requiresAuthentication, catchError(async(req, res) => {
   let expenseInfo = {
     id: req.params.expenseId,
     category_id: req.params.categoryId,
@@ -280,10 +309,11 @@ app.post("/expenses/:expenseId/:categoryId/edit", async(req, res) => {
     req.flash("success", "The expense has been updated.");
     res.redirect(`/expenses/${expenseInfo.category_id}`);
   };
-});
+})
+);
 
 //Delete an expense
-app.post("/expenses/:categoryId/:expenseId/delete", async(req, res) => {
+app.post("/expenses/:categoryId/:expenseId/delete", requiresAuthentication, catchError(async(req, res) => {
   let id = req.params.expenseId;
   let catId = req.params.categoryId;
   let deleted = await res.locals.store.deleteExpense(id);
@@ -293,9 +323,34 @@ app.post("/expenses/:categoryId/:expenseId/delete", async(req, res) => {
   }
   req.flash("success", "Expense deleted.");
   res.redirect(`/expenses/${catId}`);
+})
+);
+
+//User sign in handler
+app.post("/users/signin", (req, res) => {
+  let username = req.body.username.trim();
+  let password = req.body.password;
+
+  if (username !== 'admin' || password != 'secret') {
+    req.flash("error", "Invalid credentials.");
+    res.render("signin", {
+      flash: req.flash(),
+      username: req.body.username,
+    })
+  } else {
+    req.session.username = username;
+    req.session.signedIn = true;
+    req.flash("info", `Welcome ${req.session.username}!`);
+    res.redirect("/categories");
+  }
 });
 
-// app.post("/users/signin", )
+//Signout handler
+app.post("/users/signout", (req, res) => {
+  delete req.session.username;
+  delete req.session.signedIn;
+  res.redirect("/users/signin");
+})
 
 //Error handler
 app.use((err, req, res, _next) => {
