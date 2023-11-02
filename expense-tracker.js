@@ -369,7 +369,7 @@ app.post("/users/signin", catchError(async(req, res) => {
 app.post("/users/signout", (req, res) => {
   delete req.session.username;
   delete req.session.signedIn;
-  res.redirect("/users/signin");
+  res.redirect("/");
 })
 
 //Error handler
